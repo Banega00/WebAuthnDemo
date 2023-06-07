@@ -1,0 +1,1 @@
+export { ExampleMiddleware } from './ExampleMiddleware.request.dto'
