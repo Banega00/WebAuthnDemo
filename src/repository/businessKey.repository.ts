@@ -1,5 +1,5 @@
 import { EntityManager } from "typeorm";
-import { BusinessKey } from "../models/Business-key.entity";
+import { BusinessKey } from "../models/user.entity";
 import { BaseRepository } from "./base.repository";
 
 export class BusinessKeyRepository extends BaseRepository<BusinessKey>{
