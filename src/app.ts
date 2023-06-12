@@ -9,9 +9,10 @@ import Logger from './utils/Logger';
 import { router } from "./routes/router";
 import path from 'path'
 import { errorWrapper } from "./utils/error-wrapper";
+import session from 'express-session'
+import { env } from "./utils/env-wrapper";
 import { sendResponse } from "./utils/response-wrapper";
-import { ErrorStatusCode, SuccessStatusCode } from "./status-codes";
-import CustomError from "./errors/CustomError";
+import { SuccessStatusCode } from "./status-codes";
 
 const logger = new Logger('App');
 
@@ -34,15 +35,29 @@ app.use(errorWrapper((request: Request, response: Response, next: NextFunction) 
 app.use(errorWrapper((request: Request, response: Response, next: NextFunction) => {
     logger.info(`Start of Request: ${httpContext.get('route')}`)
     next();
+}));
+
+app.use(session({
+    secret: env.cookie_secret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 3000, httpOnly: true }
 }))
+
+
+app.get('/test-express-session', (request: Request, response: Response) => {
+
+    logger.debug('Request', request.headers)
+
+    logger.debug('IP', request.ip)
+
+    //send response
+    sendResponse({ response, status: 200, code: SuccessStatusCode.Success, payload: { message: 'Session is working' } })
+})
 
 app.use(errorWrapper(validateRequestPayload));
 
 
-app.use('/test-error-wrapper', errorWrapper(async function (request, response, next) {
-    // throw new CustomError({message:'Test Error Wrapper Message', code: ErrorStatusCode.UNKNOWN_ERROR})
-    sendResponse({response, status:200, code:SuccessStatusCode.Success})
-}))
 
 app.use(router)
 

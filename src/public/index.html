@@ -1,12 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.es5.umd.min.js"></script>
     <title>Document</title>
 </head>
+
 <body>
-    WELCOME
+    <input id="username-input" type="text" placeholder="Username">
+    <button id="register-btn">
+        Register
+    </button>
+
+    <script>
+        const { startAuthentication } = SimpleWebAuthnBrowser;
+
+        fetch('/generate-authentication-options')
+        .then(response => {
+            response = response.json();
+            
+        })
+        .catch(error =>{
+            console.log(error);
+            alert('Error generating authentication options');
+        })
+
+
+        ////REGISTRATION
+        const registerBtn = document.getElementById('register-btn');
+        registerBtn.addEventListener('click', () => {
+            const username = document.querySelector('#username-input')?.value;
+            if (!username) {
+                alert('Please enter a username');
+                return
+            }
+
+            fetch(`http://localhost:8080/register-options/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+
+                    const { extensions, ...opts } = data.payload.options;
+
+                    startAuthentication(opts)
+                        .then(async asseResp => {
+
+                            const verificationResponse = await ('/verify-authentication', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(asseResp)
+                            })
+
+                            const verificationJSON = await verificationResp.json();
+
+                            if (verificationJSON && verificationJSON.verified) {
+                                alert('Successfully registerd')
+                            } else {
+                                alert('Failed to register')
+                                console.log(verificationJSON)
+                            }
+
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert(err)
+                        });
+                })
+                .catch(err => {
+                    console.log(err);
+
+                    alert('Error generating register options')
+                });
+        });
+    </script>
 </body>
+
 </html>

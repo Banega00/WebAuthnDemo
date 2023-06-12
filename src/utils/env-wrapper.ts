@@ -25,6 +25,8 @@ class EnvWrapper {
         rp_id: this.getProperty("FIDO_RP_ID"),
     }
 
+    public cookie_secret = this.getProperty("COOKIE_SECRET")
+
     public log_level = this.getProperty('log_level');
  
     private getProperty(property: string): string {
@@ -38,7 +40,6 @@ class EnvWrapper {
     private toBoolean(value: string): boolean {
         return value.toLowerCase() === "true";
     }
- 
 }
  
 export const env = new EnvWrapper();
