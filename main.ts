@@ -27,7 +27,7 @@ export const dataSource = new DataSource({
 
     try {
 
-        await dataSource.initialize()
+        // await dataSource.initialize()
 
         logger.info(`✅ - Connected to database successfully`)
         
