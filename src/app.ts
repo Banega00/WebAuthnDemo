@@ -18,6 +18,7 @@ const logger = new Logger('App');
 
 const app: express.Application = express();
 
+app.enable('trust proxy');
 app.use(cors());
 app.use(json({ limit: "50mb", type: "application/json" }));
 
